@@ -1,0 +1,80 @@
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/RecuperarDadosServlet")
+public class RecuperarDadosServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+       
+        Cookie[] cookies = request.getCookies();
+
+     
+        if (cookies != null) {
+            // Busca os valores dos cookies
+            String nome = null;
+            String email = null;
+            String curso = null;
+            String empresa = null;
+            String corFavorita = null;
+
+            for (Cookie cookie : cookies) {
+                switch (cookie.getName()) {
+                    case "nome":
+                        nome = cookie.getValue();
+                        break;
+                    case "email":
+                        email = cookie.getValue();
+                        break;
+                    case "curso":
+                        curso = cookie.getValue();
+                        break;
+                    case "empresa":
+                        empresa = cookie.getValue();
+                        break;
+                    case "corFavorita":
+                        corFavorita = cookie.getValue();
+                        break;
+                }
+            }
+
+      
+            request.setAttribute("nome", nome);
+            request.setAttribute("email", email);
+            request.setAttribute("curso", curso);
+            request.setAttribute("empresa", empresa);
+            request.setAttribute("corFavorita", corFavorita);
+            request.getRequestDispatcher("mostrarDados.jsp").forward(request, response);
+        } else {
+            response.getWriter().println("<h2>Nenhum cookie encontrado.</h2>");
+        }
+    }
+}
+
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dados do Cookie</title>
+</head>
+<body>
+    <h2>Dados do Cookie</h2>
+
+    <ul>
+        <li><b>Nome:</b> ${nome}</li>
+        <li><b>E-mail:</b> ${email}</li>
+        <li><b>Curso:</b> ${curso}</li>
+        <li><b>Empresa:</b> ${empresa}</li>
+        <li><b>Cor Favorita:</b> <span style="color: ${corFavorita};">${corFavorita}</span></li>
+    </ul>
+</body>
+</html>
+
+
