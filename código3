@@ -1,0 +1,55 @@
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+@WebServlet("/CriarSessaoServlet")
+public class CriarSessaoServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Obtém a sessão ou cria uma nova se não existir
+        HttpSession session = request.getSession(true);
+
+        // Obtém o ID da sessão
+        String sessionId = session.getId();
+
+        // Obtém a data e hora da criação da sessão
+        Date creationTime = new Date(session.getCreationTime());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        String creationTimeString = dateFormat.format(creationTime);
+
+        // Obtém a data e hora do último acesso à sessão
+        Date lastAccessTime = new Date(session.getLastAccessedTime());
+        String lastAccessTimeString = dateFormat.format(lastAccessTime);
+
+        // Atualiza a contagem de sessões
+        int sessionCount = 1;
+        if (session.getAttribute("sessionCount") != null) {
+            sessionCount = (int) session.getAttribute("sessionCount");
+            sessionCount++;
+        }
+        session.setAttribute("sessionCount", sessionCount);
+
+        // Mostra uma mensagem após a 5ª sessão
+        String message = "";
+        if (sessionCount >= 5) {
+            message = "Parabéns! Esta é a sua quinta sessão.";
+        }
+
+        // Define os atributos para a página JSP
+        request.setAttribute("sessionId", sessionId);
+        request.setAttribute("creationTime", creationTimeString);
+        request.setAttribute("lastAccessTime", lastAccessTimeString);
+        request.setAttribute("message", message);
+
+        // Encaminha para a página JSP
+        request.getRequestDispatcher("mostrarSessao.jsp").forward(request, response);
+    }
+}
